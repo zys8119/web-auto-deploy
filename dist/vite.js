@@ -7,6 +7,10 @@ var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
     for (let key of __getOwnPropNames(from))
@@ -23,10 +27,11 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // node_modules/.pnpm/lodash@4.17.21/node_modules/lodash/lodash.js
 var require_lodash = __commonJS({
-  "node_modules/.pnpm/lodash@4.17.21/node_modules/lodash/lodash.js"(exports2, module2) {
+  "node_modules/.pnpm/lodash@4.17.21/node_modules/lodash/lodash.js"(exports, module2) {
     (function() {
       var undefined;
       var VERSION = "4.17.21";
@@ -354,7 +359,7 @@ var require_lodash = __commonJS({
       var freeGlobal = typeof global == "object" && global && global.Object === Object && global;
       var freeSelf = typeof self == "object" && self && self.Object === Object && self;
       var root = freeGlobal || freeSelf || Function("return this")();
-      var freeExports = typeof exports2 == "object" && exports2 && !exports2.nodeType && exports2;
+      var freeExports = typeof exports == "object" && exports && !exports.nodeType && exports;
       var freeModule = freeExports && typeof module2 == "object" && module2 && !module2.nodeType && module2;
       var moduleExports = freeModule && freeModule.exports === freeExports;
       var freeProcess = moduleExports && freeGlobal.process;
@@ -5500,9 +5505,17 @@ var require_lodash = __commonJS({
       } else {
         root._ = _;
       }
-    }).call(exports2);
+    }).call(exports);
   }
 });
+
+// src/vite.ts
+var vite_exports = {};
+__export(vite_exports, {
+  default: () => vite_default
+});
+module.exports = __toCommonJS(vite_exports);
+var import_lodash2 = __toESM(require_lodash());
 
 // src/index.ts
 var import_fs = require("fs");
@@ -5514,9 +5527,6 @@ function transform(html, options) {
   return html.replace(/(<head>)/, `$1${tempContent}`);
 }
 
-// src/webpack.ts
-var import_lodash2 = __toESM(require_lodash());
-
 // src/defaultConfig.ts
 var defaultConfig_default = {
   interval: 1e3,
@@ -5525,30 +5535,16 @@ var defaultConfig_default = {
   enable: true
 };
 
-// src/webpack.ts
-var MyHtmlWebpackPlugin = class {
-  constructor(options) {
-    this.options = {};
-    this.options = (0, import_lodash2.merge)(defaultConfig_default, options);
-  }
-  apply(compiler) {
-    compiler.hooks.compilation.tap("MyHtmlWebpackPlugin", (compilation) => {
-      compilation.hooks.htmlWebpackPluginAfterHtmlProcessing.tapAsync(
-        "MyHtmlWebpackPlugin",
-        (htmlPluginData, callback) => {
-          let modifiedHtml = htmlPluginData.html;
-          modifiedHtml = this.customHtmlProcessing(modifiedHtml);
-          htmlPluginData.html = modifiedHtml;
-          callback(null, htmlPluginData);
-        }
-      );
-    });
-  }
-  customHtmlProcessing(html) {
-    return transform(html, this.options);
-  }
-};
-module.exports = MyHtmlWebpackPlugin;
+// src/vite.ts
+function vite_default(options) {
+  return {
+    enforce: "post",
+    name: "web-auto-deploy",
+    transformIndexHtml(html) {
+      return transform(html, (0, import_lodash2.merge)(defaultConfig_default, options));
+    }
+  };
+}
 /*! Bundled license information:
 
 lodash/lodash.js:

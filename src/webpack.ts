@@ -1,15 +1,11 @@
 import {transform, Options} from "./index"
 import {merge} from "lodash"
+import defaultConfig from "./defaultConfig"
 
 class MyHtmlWebpackPlugin {
     options:Options = {} as any
     constructor(options?:Partial<Options>) {
-        this.options = merge({
-            interval:1000,
-            beforeHtml:null,
-            afterHtml:null,
-            enable:true,
-        }, options)
+        this.options = merge(defaultConfig, options)
     }
 
     apply(compiler) {

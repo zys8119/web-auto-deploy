@@ -2,15 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = require("./index");
 const lodash_1 = require("lodash");
+const defaultConfig_1 = require("./defaultConfig");
 class MyHtmlWebpackPlugin {
     constructor(options) {
         this.options = {};
-        this.options = lodash_1.merge({
-            interval: 1000,
-            beforeHtml: null,
-            afterHtml: null,
-            enable: true,
-        }, options);
+        this.options = (0, lodash_1.merge)(defaultConfig_1.default, options);
     }
     apply(compiler) {
         // 注册 Webpack 插件的事件钩子
@@ -29,7 +25,7 @@ class MyHtmlWebpackPlugin {
         });
     }
     customHtmlProcessing(html) {
-        return index_1.transform(html, this.options);
+        return (0, index_1.transform)(html, this.options);
     }
 }
 module.exports = MyHtmlWebpackPlugin;
