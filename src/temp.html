@@ -33,8 +33,10 @@
           const cache = localStorage.getItem(key)
           if(!cache || typeof cache === 'string' && JSON.stringify(htmlArrs) !== cache){
               localStorage.setItem(key, JSON.stringify(htmlArrs))
-              reload()
-              return
+              if( typeof cache === 'string'){
+                  reload()
+                  return
+              }
           }
           setTimeout(function (){webAutoDeployTemp()}, interval)
       }).catch(()=>{
