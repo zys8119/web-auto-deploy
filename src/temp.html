@@ -1,0 +1,45 @@
+<%= beforeHtml %>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<script>
+  ;(function webAutoDeployTemp(){
+      let enable = <%= enable %>
+      let interval = <%= interval %>
+      if(!enable){
+          return
+      }
+      if(typeof window.$webAutoDeploy !== 'function'){
+            return setTimeout(function (){webAutoDeployTemp()}, interval)
+      }
+      function randomParams(url, params){
+          params = params || {}
+          let search = ((/(?:\?(.*))/.exec(url) || [])[1] || '').replace(/&$/,'')
+          let _url = url.match(/^[^\?]*/)[0]
+          let _params = ''
+          for (let k in params){
+              _params += k+'='+encodeURI(params[k])
+          }
+          return _url+'?'+search.trim()+'&'+_params.trim()
+      }
+      const reload = function (){
+          window.$webAutoDeploy(randomParams)
+      }
+      fetch(location.href).then(function (e){
+          return e.text()
+      }).then(function (html){
+          const htmlArrs = (html.match(/<.*(script|link).*>/img) || []).map(function (e){ return (/(?:(src|href)=(.*?>))/.exec(e) || [])[2]})
+          const key = 'web-auto-deploy-arrs'
+          const cache = localStorage.getItem(key)
+          if(!cache || typeof cache === 'string' && JSON.stringify(htmlArrs) !== cache){
+              localStorage.setItem(key, JSON.stringify(htmlArrs))
+              reload()
+              return
+          }
+          setTimeout(function (){webAutoDeployTemp()}, interval)
+      }).catch(()=>{
+          setTimeout(function (){webAutoDeployTemp()}, interval)
+      })
+  })()
+</script>
+<%= afterHtml %>

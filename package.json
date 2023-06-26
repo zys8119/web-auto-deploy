@@ -1,0 +1,32 @@
+{
+  "name": "web-auto-deploy",
+  "version": "0.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "esbuild": "tsc -w -d  --declarationDir dist & esbuild src/*.ts --bundle --watch --outdir=dist  --loader:.ts=ts --tsconfig=tsconfig.json --platform=node"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js"
+    },
+    "./*": "./*",
+    "./webpack": {
+      "types": "./dist/webpack.d.ts",
+      "require": "./dist/webpack.js",
+      "import": "./dist/webpack.js"
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/lodash": "^4.14.195",
+    "@types/node": "^20.3.1",
+    "esbuild": "^0.18.8",
+    "lodash": "^4.17.21",
+    "typescript": "^5.1.3"
+  }
+}
