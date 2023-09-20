@@ -34,15 +34,27 @@ module.exports = {
 
 #### webpack3.X + vue cli
 
-vue.config.ts
+在webpack插件位置添加以下代码
 
-```typescript
+```javascript
 const webAutoDeploy = require("web-auto-deploy/vite")
-module.exports = {
-    configureWebpack:{
-        plugins: [
-            new webAutoDeploy()
-        ]
+{
+    apply(compiler) {
+        compiler.plugin('done', function (compilation, callback) {
+            const indexPath = path.resolve(__dirname,'../dist/index.html')
+            let content = fs.readFileSync(indexPath, 'utf-8')
+            content = (function transform(html, options){
+                const tempPath =  path.resolve(process.cwd(), "node_modules/web-auto-deploy/src/temp.html")
+                const tempContent = _.template(fs.readFileSync(tempPath, 'utf-8'))(options)
+                return html.replace(/(<head>)/,`$1${tempContent}`)
+            })(content, {
+                enable:true,
+                interval: 3000,
+                beforeHtml:null,
+                afterHtml:null
+            })
+            fs.writeFileSync(indexPath, content)
+        })
     }
 }
 ```
