@@ -14,13 +14,19 @@
       }
       function randomParams(url, params){
           params = params || {}
-          let search = ((/(?:\?(.*))/.exec(url) || [])[1] || '').replace(/&$/,'')
-          let _url = url.match(/^[^\?]*/)[0]
-          let _params = ''
-          for (let k in params){
-              _params += k+'='+encodeURI(params[k])
+          const _url_obj = new URL(url)
+          const searchParse = function (url){
+              let search = ((/(?:\?(.*))/.exec(url) || [])[1] || '').replace(/&$/,'')
+              let _url = url.match(/^[^\?]*/)[0]
+              let _params = ''
+              for (let k in params){
+                  _params += k+'='+encodeURI(params[k])
+              }
+              return _url+'?'+search.trim()+'&'+_params.trim()
           }
-          return _url+'?'+search.trim()+'&'+_params.trim()
+          _url_obj.hash  = searchParse(_url_obj.hash)
+          _url_obj.search  = searchParse(_url_obj.search)
+          return _url_obj.toString()
       }
       const reload = function (){
           window.$webAutoDeploy(randomParams)
@@ -28,7 +34,7 @@
       fetch(location.href).then(function (e){
           return e.text()
       }).then(function (html){
-          const htmlArrs = (html.match(/<.*(script|link).*>/img) || []).map(function (e){ return (/(?:(src|href)=(.*?>))/.exec(e) || [])[2]})
+          const htmlArrs = (html.match(/<\s*(script|link).*?>/img) || []).map(function (e){ return (/(?:(src|href)=(.*?>))/.exec(e) || [])[2]})
           const key = 'web-auto-deploy-arrs'
           const cache = localStorage.getItem(key)
           if(!cache || typeof cache === 'string' && JSON.stringify(htmlArrs) !== cache){
