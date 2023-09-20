@@ -37,23 +37,19 @@ module.exports = {
 在webpack插件位置添加以下代码
 
 ```javascript
-const webAutoDeploy = require("web-auto-deploy/vite")
+const transform = require("web-auto-deploy/vite")
 {
     apply(compiler) {
         compiler.plugin('done', function (compilation, callback) {
-            const indexPath = path.resolve(__dirname,'../dist/index.html')
-            let content = fs.readFileSync(indexPath, 'utf-8')
-            content = (function transform(html, options){
-                const tempPath =  path.resolve(process.cwd(), "node_modules/web-auto-deploy/src/temp.html")
-                const tempContent = _.template(fs.readFileSync(tempPath, 'utf-8'))(options)
-                return html.replace(/(<head>)/,`$1${tempContent}`)
-            })(content, {
-                enable:true,
-                interval: 3000,
-                beforeHtml:null,
-                afterHtml:null
-            })
-            fs.writeFileSync(indexPath, content)
+            fs.writeFileSync(
+                path.resolve(__dirname,'../dist/index.html'), 
+                transform(fs.readFileSync(indexPath, 'utf-8'), {
+                    enable:true,
+                    interval: 3000,
+                    beforeHtml:null,
+                    afterHtml:null
+                })
+            )
         })
     }
 }
